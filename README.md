@@ -7,7 +7,7 @@ The service monitors athletics sources, asks OpenAI API to write source-backed R
 ## Architecture
 
 - Railway web service: Telegram webhook and health check.
-- Railway scheduled jobs: hourly monitoring, morning digest, evening digest.
+- Railway scheduled jobs: selective hourly monitoring and one thematic morning digest.
 - Railway Postgres: drafts, published posts, source items, run logs.
 - OpenAI API: post writing and formatting from verified facts.
 - Telegram Bot API: draft approval and channel publishing.
@@ -30,21 +30,19 @@ uvicorn app.web.main:app --host 0.0.0.0 --port $PORT
 Create scheduled jobs with these commands. Railway cron uses UTC:
 
 ```bash
-# 09:00 Asia/Almaty
+# 09:00 Asia/Almaty, thematic morning digest
 python -m app.jobs.digest morning
 
 # hourly monitoring, 09:00-22:00 Asia/Almaty = 04:00-17:00 UTC
 python -m app.jobs.hourly
-
-# 19:00 Asia/Almaty
-python -m app.jobs.digest evening
 ```
 
 Suggested schedules:
 
 - Morning digest: `0 4 * * *`
 - Hourly monitor: `0 4-17 * * *`
-- Evening digest: `0 14 * * *`
+
+Do not schedule a routine evening digest. Evening publishing should happen only when hourly monitoring finds a strong confirmed update.
 
 ## Required Variables
 

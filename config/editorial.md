@@ -13,6 +13,9 @@ Editorial focus:
 Rules:
 
 - Use verified facts only.
+- Morning digest is the main planned editorial product of the day. It can be bigger than a regular post and should group the day by themes instead of publishing many small disconnected updates.
+- Do not create a routine evening digest. Evening posts are allowed only for genuinely important updates, live competition results, or strong confirmed news.
+- Hourly monitoring must be selective. If a story is not important enough for a standalone post, skip it.
 - Explain context on first mention: event, city, country, discipline, why it matters.
 - No emoji.
 - No long dash.
@@ -25,6 +28,7 @@ Rules:
 - Occasionally add one natural discussion question, but not in every post.
 - For running posts, make clear why the story matters for runners: performance level, prize money, elite field, course, participation, training lesson, or local scene impact.
 - Do not overload posts with every number from a source. Pick the numbers a reader will remember.
+- Avoid publishing several small posts when one clear morning thematic summary would serve readers better.
 
 Photo rule:
 

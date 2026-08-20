@@ -11,7 +11,12 @@ async def run_monitor(pool, mode: str = "hourly") -> int:
     settings = get_settings()
     sources, watch_terms = load_sources()
     items = await collect_sources(sources)
-    ranked = rank_items(items, watch_terms, settings.max_drafts_per_run)
+    limit = settings.max_drafts_per_run
+    min_score = None
+    if mode == "hourly":
+        limit = min(settings.max_drafts_per_run, 2)
+        min_score = 115
+    ranked = rank_items(items, watch_terms, limit, min_score=min_score)
     saved_items = await insert_source_items(pool, ranked)
 
     telegram = TelegramClient()
@@ -34,4 +39,3 @@ async def run_monitor(pool, mode: str = "hourly") -> int:
             await mark_draft_message(pool, draft.id, message_id)
         created += 1
     return created
-

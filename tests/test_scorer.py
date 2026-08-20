@@ -2,7 +2,7 @@ from app.models import SourceItem
 from app.ranking.scorer import rank_items, score_item
 
 
-def make_item(title: str, summary: str = "") -> SourceItem:
+def make_item(title: str, summary: str = "", score: int = 10) -> SourceItem:
     return SourceItem(
         source_id="test",
         source_name="Test",
@@ -11,7 +11,7 @@ def make_item(title: str, summary: str = "") -> SourceItem:
         summary=summary,
         published_at=None,
         content_hash=title,
-        score=10,
+        score=score,
     )
 
 
@@ -25,3 +25,11 @@ def test_rank_items_returns_highest_scores_first() -> None:
     ranked = rank_items(items, [], limit=1)
     assert ranked[0].title == "Duplantis world record attempt"
 
+
+def test_rank_items_can_filter_by_min_score() -> None:
+    items = [
+        make_item("minor update", score=80),
+        make_item("Duplantis world record attempt", score=80),
+    ]
+    ranked = rank_items(items, [], limit=2, min_score=115)
+    assert [item.title for item in ranked] == ["Duplantis world record attempt"]

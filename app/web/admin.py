@@ -58,10 +58,10 @@ async def run_hourly(x_admin_secret: str | None = Header(default=None)) -> dict:
 @router.post("/run/digest/{period}")
 async def run_digest(period: str, x_admin_secret: str | None = Header(default=None)) -> dict:
     verify_admin_secret(x_admin_secret)
-    if period not in {"morning", "evening"}:
+    if period != "morning":
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Period must be morning or evening",
+            detail="Only morning digest is enabled",
         )
     pool = await create_pool()
     try:

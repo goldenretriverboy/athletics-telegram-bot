@@ -12,8 +12,8 @@ logger = logging.getLogger(__name__)
 async def main() -> None:
     configure_logging()
     mode = sys.argv[1] if len(sys.argv) > 1 else "digest"
-    if mode not in {"morning", "evening", "digest"}:
-        raise SystemExit("Usage: python -m app.jobs.digest [morning|evening]")
+    if mode not in {"morning", "digest"}:
+        raise SystemExit("Usage: python -m app.jobs.digest [morning]")
 
     pool = await create_pool()
     try:
@@ -25,4 +25,3 @@ async def main() -> None:
 
 if __name__ == "__main__":
     asyncio.run(main())
-

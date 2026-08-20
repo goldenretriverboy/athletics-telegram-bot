@@ -28,7 +28,13 @@ def score_item(item: SourceItem, watch_terms: list[str]) -> SourceItem:
     return item
 
 
-def rank_items(items: list[SourceItem], watch_terms: list[str], limit: int) -> list[SourceItem]:
+def rank_items(
+    items: list[SourceItem],
+    watch_terms: list[str],
+    limit: int,
+    min_score: int | None = None,
+) -> list[SourceItem]:
     scored = [score_item(item, watch_terms) for item in items]
+    if min_score is not None:
+        scored = [item for item in scored if item.score >= min_score]
     return sorted(scored, key=lambda item: item.score, reverse=True)[:limit]
-
