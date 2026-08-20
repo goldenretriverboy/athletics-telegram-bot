@@ -19,8 +19,57 @@ sources:
     type: rss
     url: https://www.letsrun.com/feed/
     priority: 70
+  - id: marathon-handbook
+    name: Marathon Handbook
+    type: rss
+    url: https://marathonhandbook.com/feed/
+    priority: 75
+  - id: citius-mag
+    name: Citius Mag
+    type: rss
+    url: https://citiusmag.com/feed/
+    priority: 75
+  - id: runners-world
+    name: Runner's World
+    type: rss
+    url: https://www.runnersworld.com/rss/all.xml
+    priority: 65
 
 watch_terms:
+  - running
+  - runner
+  - runners
+  - road running
+  - marathon
+  - half marathon
+  - 10K
+  - 5K
+  - cross country
+  - sprint
+  - sprints
+  - hurdles
+  - relay
+  - relays
+  - 100m
+  - 200m
+  - 400m
+  - 800m
+  - 1500m
+  - 5000m
+  - 10000m
+  - middle distance
+  - long distance
+  - recovery
+  - injury prevention
+  - training
+  - sleep
+  - nutrition
+  - shoes
+  - prize money
+  - prize fund
+  - elite field
+  - course record
+  - Almaty Marathon
   - Diamond League
   - World Athletics
   - World Marathon Majors
@@ -39,4 +88,3 @@ watch_terms:
   - Sifan Hassan
   - Kazakhstan
   - Kazakhstan record
-
