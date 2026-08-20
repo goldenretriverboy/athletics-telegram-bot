@@ -1,0 +1,42 @@
+sources:
+  - id: world-athletics-news
+    name: World Athletics
+    type: rss
+    url: https://worldathletics.org/feeds/news
+    priority: 100
+  - id: diamond-league-news
+    name: Diamond League
+    type: rss
+    url: https://www.diamondleague.com/news/rss/
+    priority: 95
+  - id: athletics-weekly
+    name: Athletics Weekly
+    type: rss
+    url: https://athleticsweekly.com/feed/
+    priority: 80
+  - id: letsrun
+    name: LetsRun
+    type: rss
+    url: https://www.letsrun.com/feed/
+    priority: 70
+
+watch_terms:
+  - Diamond League
+  - World Athletics
+  - World Marathon Majors
+  - New York City Marathon
+  - Boston Marathon
+  - London Marathon
+  - Berlin Marathon
+  - Chicago Marathon
+  - Tokyo Marathon
+  - Armand Duplantis
+  - Letsile Tebogo
+  - Jakob Ingebrigtsen
+  - Andreas Almgren
+  - Faith Kipyegon
+  - Eliud Kipchoge
+  - Sifan Hassan
+  - Kazakhstan
+  - Kazakhstan record
+

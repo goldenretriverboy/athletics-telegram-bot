@@ -1,0 +1,2 @@
+"""Athletics Telegram bot package."""
+
