@@ -1,6 +1,5 @@
 from app.models import SourceItem
 
-
 IMPORTANT_TERMS = {
     "world record": 40,
     "record": 20,

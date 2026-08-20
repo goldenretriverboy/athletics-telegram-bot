@@ -110,7 +110,9 @@ async def insert_published_post(
     async with pool.acquire() as conn:
         await conn.execute(
             """
-            INSERT INTO published_posts (draft_id, source_url, source_title, text_hash, telegram_message_id)
+            INSERT INTO published_posts (
+                draft_id, source_url, source_title, text_hash, telegram_message_id
+            )
             VALUES ($1, $2, $3, $4, $5)
             ON CONFLICT (text_hash) DO NOTHING
             """,

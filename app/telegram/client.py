@@ -49,5 +49,7 @@ class TelegramClient:
         return int(data["result"]["message_id"])
 
     async def answer_callback(self, callback_query_id: str, text: str) -> None:
-        await self._post("answerCallbackQuery", {"callback_query_id": callback_query_id, "text": text})
-
+        await self._post(
+            "answerCallbackQuery",
+            {"callback_query_id": callback_query_id, "text": text},
+        )
