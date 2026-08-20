@@ -18,7 +18,11 @@ async def insert_source_items(pool: asyncpg.Pool, items: Sequence[SourceItem]) -
                     source_id, source_name, title, url, summary, published_at, content_hash, score
                 )
                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-                ON CONFLICT (url) DO NOTHING
+                ON CONFLICT (url) DO UPDATE
+                SET
+                    summary = EXCLUDED.summary,
+                    published_at = COALESCE(source_items.published_at, EXCLUDED.published_at),
+                    score = GREATEST(source_items.score, EXCLUDED.score)
                 RETURNING id
                 """,
                 item.source_id,
