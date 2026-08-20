@@ -52,7 +52,7 @@ Set these in Railway:
 
 - `DATABASE_URL`
 - `OPENAI_API_KEY`
-- `OPENAI_MODEL`
+- `OPENAI_MODEL` (`gpt-4.1-mini` for economical drafts, `gpt-5.5` for higher quality)
 - `TELEGRAM_BOT_TOKEN`
 - `TELEGRAM_CHANNEL_ID`
 - `TELEGRAM_DRAFT_CHAT_ID`
@@ -99,4 +99,3 @@ The webhook endpoint is:
 ## Current Status
 
 This is the initial scaffold. The next milestone is connecting real source collectors and testing the approval flow against a private draft chat.
-

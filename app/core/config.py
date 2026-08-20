@@ -20,7 +20,7 @@ class Settings(BaseSettings):
     telegram_webhook_secret: str = Field(..., min_length=16)
 
     openai_api_key: str = Field(..., min_length=1)
-    openai_model: str = "gpt-5.4-mini"
+    openai_model: str = "gpt-4.1-mini"
 
     timezone: str = "Asia/Almaty"
     max_drafts_per_run: int = 3
@@ -29,4 +29,3 @@ class Settings(BaseSettings):
 @lru_cache
 def get_settings() -> Settings:
     return Settings()
-
