@@ -16,12 +16,14 @@ async def run_monitor(pool, mode: str = "hourly") -> int:
     if mode == "hourly":
         limit = min(settings.max_drafts_per_run, 2)
         min_score = 115
-    ranked = rank_items(items, watch_terms, limit, min_score=min_score)
+    ranked = rank_items(items, watch_terms, len(items), min_score=min_score)
     saved_items = await insert_source_items(pool, ranked)
 
     telegram = TelegramClient()
     created = 0
     for item in saved_items:
+        if created >= limit:
+            break
         if await draft_exists_for_source(pool, item.url):
             continue
         draft = await write_draft(item, digest_mode=mode)
