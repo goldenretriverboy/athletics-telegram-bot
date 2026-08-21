@@ -63,11 +63,17 @@ async def test_run_monitor_skips_existing_drafts_before_applying_limit(monkeypat
         async def send_draft(self, draft):
             return draft.id
 
+    async def fake_mark_draft_message(_pool, _draft_id, _message_id):
+        return None
+
+    import app.db.repository as repository
+
     monkeypatch.setattr(pipeline, "collect_sources", fake_collect_sources)
     monkeypatch.setattr(pipeline, "insert_source_items", fake_insert_source_items)
     monkeypatch.setattr(pipeline, "draft_exists_for_source", fake_draft_exists_for_source)
     monkeypatch.setattr(pipeline, "write_draft", fake_write_draft)
     monkeypatch.setattr(pipeline, "insert_draft", fake_insert_draft)
+    monkeypatch.setattr(repository, "mark_draft_message", fake_mark_draft_message)
     monkeypatch.setattr(pipeline, "TelegramClient", FakeTelegramClient)
 
     created = await pipeline.run_monitor(pool=object(), mode="morning")
