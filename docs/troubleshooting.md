@@ -102,6 +102,8 @@ X-Admin-Secret: <TELEGRAM_WEBHOOK_SECRET>
 - `OPENAI_API_KEY`;
 - баланс OpenAI API;
 - `OPENAI_MODEL`;
+- `OPENAI_HOURLY_MODEL`;
+- `OPENAI_STRONG_MODEL`;
 - доступность модели;
 - Railway logs.
 
@@ -144,4 +146,3 @@ python --version
 2. redeploy web service и cron services;
 3. обновить локальный `.env`;
 4. заново установить Telegram webhook.
-

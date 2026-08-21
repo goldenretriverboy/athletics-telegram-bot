@@ -24,7 +24,9 @@
 | `TELEGRAM_DRAFT_CHAT_ID` | Да | Draft-канал или чат, куда приходят черновики. |
 | `TELEGRAM_WEBHOOK_SECRET` | Да | Secret для Telegram webhook и admin endpoints. Минимум 16 символов. |
 | `OPENAI_API_KEY` | Да | API key для OpenAI API. |
-| `OPENAI_MODEL` | Нет | Модель для генерации черновиков. |
+| `OPENAI_MODEL` | Нет | Fallback-модель для генерации черновиков. |
+| `OPENAI_HOURLY_MODEL` | Нет | Модель для hourly monitoring. Сейчас `gpt-5-mini`. |
+| `OPENAI_STRONG_MODEL` | Нет | Модель для утренних сводок и аналитических постов. Сейчас `gpt-5.1`. |
 | `TIMEZONE` | Нет | Часовой пояс проекта. Сейчас `Asia/Almaty`. |
 | `MAX_DRAFTS_PER_RUN` | Нет | Максимум новых черновиков за один запуск. |
 
@@ -37,6 +39,17 @@ MAX_DRAFTS_PER_RUN=3
 ```
 
 `AUTO_PUBLISH=false` означает, что бот отправляет черновики в draft-канал и ждёт ручного подтверждения.
+
+## OpenAI Model Routing
+
+Модель выбирается по режиму запуска:
+
+- `hourly`: `OPENAI_HOURLY_MODEL`, сейчас `gpt-5-mini`;
+- `morning`: `OPENAI_STRONG_MODEL`, сейчас `gpt-5.1`;
+- `analysis` и `explainer`: `OPENAI_STRONG_MODEL`;
+- если отдельная модель не задана, используется fallback `OPENAI_MODEL`.
+
+Так hourly остаётся быстрым и относительно экономичным, а качество тратится там, где читатель его реально видит: в больших утренних сводках и аналитических постах.
 
 ## `config/sources.yaml`
 
@@ -88,4 +101,3 @@ MAX_DRAFTS_PER_RUN=3
 
 - Если `RAILWAY_RUN_COMMAND` не задан, стартует web server.
 - Если `RAILWAY_RUN_COMMAND` задан, Railway запускает job command.
-

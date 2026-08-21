@@ -113,6 +113,8 @@ TELEGRAM_DRAFT_CHAT_ID
 TELEGRAM_WEBHOOK_SECRET
 OPENAI_API_KEY
 OPENAI_MODEL
+OPENAI_HOURLY_MODEL
+OPENAI_STRONG_MODEL
 TIMEZONE
 MAX_DRAFTS_PER_RUN
 ```
@@ -173,4 +175,3 @@ Railway обычно сам подхватывает новый commit и redepl
 3. `hourly-monitor` собрался успешно.
 4. `/health` отвечает `{"ok":true}`.
 5. Ручной admin run работает, если менялся pipeline.
-

@@ -4,12 +4,20 @@ from pathlib import Path
 
 from openai import AsyncOpenAI
 
-from app.core.config import get_settings
+from app.core.config import Settings, get_settings
 from app.models import DraftPost, SourceItem
+
+STRONG_DRAFT_MODES = {"morning", "analysis", "explainer"}
 
 
 def load_editorial_rules(path: str = "config/editorial.md") -> str:
     return Path(path).read_text(encoding="utf-8")
+
+
+def select_draft_model(settings: Settings, digest_mode: str | None) -> str:
+    if digest_mode in STRONG_DRAFT_MODES:
+        return settings.openai_strong_model
+    return settings.openai_hourly_model or settings.openai_model
 
 
 async def write_draft(item: SourceItem, digest_mode: str | None = None) -> DraftPost:
@@ -17,6 +25,7 @@ async def write_draft(item: SourceItem, digest_mode: str | None = None) -> Draft
     client = AsyncOpenAI(api_key=settings.openai_api_key)
     editorial_rules = load_editorial_rules()
     mode = digest_mode or "hourly update"
+    model = select_draft_model(settings, digest_mode)
     prompt = f"""
 Write one Russian Telegram post for an athletics channel.
 
@@ -36,7 +45,7 @@ Do not include a source line, raw URL, or "Источник:" in the text.
 The system appends the source link automatically.
 """
     response = await client.responses.create(
-        model=settings.openai_model,
+        model=model,
         input=prompt,
     )
     text = response.output_text.strip()
