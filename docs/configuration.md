@@ -1,0 +1,91 @@
+# Конфигурация
+
+Конфигурация проекта состоит из трёх частей:
+
+- environment variables;
+- `config/sources.yaml`;
+- `config/editorial.md`.
+
+## Environment Variables
+
+Класс настроек: `app/core/config.py`.
+
+Локально переменные читаются из `.env`. В production они задаются в Railway.
+
+| Переменная | Обязательная | Назначение |
+| --- | --- | --- |
+| `APP_ENV` | Нет | Имя окружения. Обычно `production` или `development`. |
+| `LOG_LEVEL` | Нет | Уровень логов. Обычно `INFO`. |
+| `AUTO_PUBLISH` | Нет | Если `true`, бот публикует сразу. Стандартно `false`. |
+| `PUBLIC_BASE_URL` | Да для webhook | Публичный URL web-сервиса Railway. |
+| `DATABASE_URL` | Да | Postgres connection string. |
+| `TELEGRAM_BOT_TOKEN` | Да | Token Telegram-бота от BotFather. |
+| `TELEGRAM_CHANNEL_ID` | Да | Основной канал для публикаций, например `@beyond_the_1ine`. |
+| `TELEGRAM_DRAFT_CHAT_ID` | Да | Draft-канал или чат, куда приходят черновики. |
+| `TELEGRAM_WEBHOOK_SECRET` | Да | Secret для Telegram webhook и admin endpoints. Минимум 16 символов. |
+| `OPENAI_API_KEY` | Да | API key для OpenAI API. |
+| `OPENAI_MODEL` | Нет | Модель для генерации черновиков. |
+| `TIMEZONE` | Нет | Часовой пояс проекта. Сейчас `Asia/Almaty`. |
+| `MAX_DRAFTS_PER_RUN` | Нет | Максимум новых черновиков за один запуск. |
+
+## Важные Безопасные Значения
+
+```env
+AUTO_PUBLISH=false
+TIMEZONE=Asia/Almaty
+MAX_DRAFTS_PER_RUN=3
+```
+
+`AUTO_PUBLISH=false` означает, что бот отправляет черновики в draft-канал и ждёт ручного подтверждения.
+
+## `config/sources.yaml`
+
+Файл содержит:
+
+- список RSS-источников;
+- `watch_terms` для повышения score важных тем.
+
+Структура источника:
+
+```yaml
+- id: world-athletics-news
+  name: World Athletics
+  type: rss
+  url: https://worldathletics.org/feeds/news
+  priority: 100
+```
+
+Поля:
+
+- `id`: стабильный технический id;
+- `name`: название источника для source link;
+- `type`: сейчас используется `rss`;
+- `url`: RSS URL;
+- `priority`: базовый score источника.
+
+Чтобы добавить источник:
+
+1. Добавь запись в `sources`.
+2. Проверь, что RSS реально отдаёт item-ы.
+3. Запусти тестовый hourly или morning run.
+4. Убедись, что черновики не засоряют канал.
+
+## `config/editorial.md`
+
+Это редакционные правила, которые напрямую попадают в prompt OpenAI.
+
+Если нужно изменить стиль постов, сначала правим `config/editorial.md`.
+
+## `railway.json`
+
+Файл задаёт start command:
+
+```json
+"startCommand": "sh -c \"${RAILWAY_RUN_COMMAND:-uvicorn app.web.main:app --host 0.0.0.0 --port ${PORT}}\""
+```
+
+Это важно: один и тот же repo используется для web service и cron-сервисов.
+
+- Если `RAILWAY_RUN_COMMAND` не задан, стартует web server.
+- Если `RAILWAY_RUN_COMMAND` задан, Railway запускает job command.
+

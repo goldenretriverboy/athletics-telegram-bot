@@ -32,6 +32,8 @@ Summary: {item.summary}
 URL: {item.url}
 
 Return only the post text. Do not invent facts. Do not include markdown.
+Do not include a source line, raw URL, or "Источник:" in the text.
+The system appends the source link automatically.
 """
     response = await client.responses.create(
         model=settings.openai_model,
