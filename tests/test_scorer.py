@@ -33,3 +33,30 @@ def test_rank_items_can_filter_by_min_score() -> None:
     ]
     ranked = rank_items(items, [], limit=2, min_score=115)
     assert [item.title for item in ranked] == ["Duplantis world record attempt"]
+
+
+def test_marathon_record_story_gets_strong_priority() -> None:
+    item = score_item(make_item("Berlin Marathon winner breaks course record"), [])
+
+    assert item.score >= 95
+
+
+def test_sports_science_story_gets_priority_when_relevant_to_running() -> None:
+    item = score_item(
+        make_item("New study links heat and hydration to marathon performance"),
+        [],
+    )
+
+    assert item.score >= 75
+
+
+def test_kazakhstan_event_change_gets_local_priority() -> None:
+    item = score_item(make_item("Almaty Marathon cancelled after route change"), [])
+
+    assert item.score >= 95
+
+
+def test_accessible_regional_major_start_gets_priority() -> None:
+    item = score_item(make_item("Beijing Marathon announces elite field"), [])
+
+    assert item.score >= 95

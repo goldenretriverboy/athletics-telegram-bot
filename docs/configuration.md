@@ -25,8 +25,9 @@
 | `TELEGRAM_WEBHOOK_SECRET` | Да | Secret для Telegram webhook и admin endpoints. Минимум 16 символов. |
 | `OPENAI_API_KEY` | Да | API key для OpenAI API. |
 | `OPENAI_MODEL` | Нет | Fallback-модель для генерации черновиков. |
-| `OPENAI_HOURLY_MODEL` | Нет | Модель для hourly monitoring. Сейчас `gpt-5-mini`. |
-| `OPENAI_STRONG_MODEL` | Нет | Модель для утренних сводок и аналитических постов. Сейчас `gpt-5.1`. |
+| `OPENAI_HOURLY_MODEL` | Нет | Модель для hourly monitoring. Сейчас `gpt-5.6-sol`. |
+| `OPENAI_STRONG_MODEL` | Нет | Модель для утренних сводок и аналитических постов. Сейчас `gpt-5.6-sol`. |
+| `OPENAI_WEB_SEARCH_ENABLED` | Нет | Если `true`, модель может использовать web search перед написанием поста. Сейчас `true`. |
 | `TIMEZONE` | Нет | Часовой пояс проекта. Сейчас `Asia/Almaty`. |
 | `MAX_DRAFTS_PER_RUN` | Нет | Максимум новых черновиков за один запуск. |
 
@@ -44,12 +45,14 @@ MAX_DRAFTS_PER_RUN=3
 
 Модель выбирается по режиму запуска:
 
-- `hourly`: `OPENAI_HOURLY_MODEL`, сейчас `gpt-5-mini`;
-- `morning`: `OPENAI_STRONG_MODEL`, сейчас `gpt-5.1`;
+- `hourly`: `OPENAI_HOURLY_MODEL`, сейчас `gpt-5.6-sol`;
+- `morning`: `OPENAI_STRONG_MODEL`, сейчас `gpt-5.6-sol`;
 - `analysis` и `explainer`: `OPENAI_STRONG_MODEL`;
 - если отдельная модель не задана, используется fallback `OPENAI_MODEL`.
 
-Так hourly остаётся быстрым и относительно экономичным, а качество тратится там, где читатель его реально видит: в больших утренних сводках и аналитических постах.
+Так все режимы генерации используют одну сильную модель. Это дороже, но полезно, если hourly posts тоже должны выходить как полноценные русскоязычные мини-статьи.
+
+Если `OPENAI_WEB_SEARCH_ENABLED=true`, writer разрешает OpenAI web search. Модель может искать недостающие результаты, даты, исследования и официальный контекст перед написанием поста.
 
 ## `config/sources.yaml`
 

@@ -41,6 +41,7 @@ watch_terms:
   - runners
   - road running
   - marathon
+  - marathon debut
   - half marathon
   - 10K
   - 5K
@@ -60,17 +61,85 @@ watch_terms:
   - middle distance
   - long distance
   - recovery
+  - physiology
+  - VO2 max
+  - heart rate
+  - hydration
+  - heat
   - injury prevention
+  - injury
   - training
   - sleep
   - nutrition
   - shoes
+  - research
+  - study
+  - sports science
+  - performance
   - prize money
   - prize fund
   - elite field
+  - start list
+  - entry list
+  - line-up
+  - lineup
+  - registration
+  - cancelled
+  - canceled
+  - postponed
+  - withdrawal
+  - route change
   - course record
+  - national record
+  - world record
+  - personal best
+  - world lead
+  - results
+  - winner
+  - podium
+  - medal
+  - champion
   - Almaty Marathon
+  - Astana Marathon
+  - Almaty
+  - Astana
+  - Kazakhstan Athletics
+  - Qazaqstan
+  - Central Asia
+  - Tashkent
+  - Bishkek
+  - Dushanbe
+  - Uzbekistan
+  - Kyrgyzstan
+  - Russia
+  - Russian athletics
+  - Moscow Marathon
+  - Moscow
+  - St Petersburg
+  - Kazan
+  - Sochi
+  - RUSAF
+  - ВФЛА
+  - China
+  - Chinese athletics
+  - Beijing Marathon
+  - Shanghai Marathon
+  - Xiamen Marathon
+  - Chengdu
+  - Urumqi
+  - Istanbul Marathon
+  - Istanbul
+  - Tbilisi
+  - Baku
+  - Dubai Marathon
+  - Doha
   - Diamond League
+  - World Championships
+  - World Athletics Championships
+  - Olympics
+  - Olympic Games
+  - Asian Championships
+  - Continental Tour
   - World Athletics
   - World Marathon Majors
   - New York City Marathon

@@ -20,9 +20,10 @@ class Settings(BaseSettings):
     telegram_webhook_secret: str = Field(..., min_length=16)
 
     openai_api_key: str = Field(..., min_length=1)
-    openai_model: str = "gpt-5-mini"
+    openai_model: str = "gpt-5.6-sol"
     openai_hourly_model: str | None = None
-    openai_strong_model: str = "gpt-5.1"
+    openai_strong_model: str = "gpt-5.6-sol"
+    openai_web_search_enabled: bool = True
 
     timezone: str = "Asia/Almaty"
     max_drafts_per_run: int = 3

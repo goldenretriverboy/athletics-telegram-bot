@@ -70,11 +70,13 @@ Writer берёт:
 
 - editorial rules из `config/editorial.md`;
 - title, summary и URL source item;
+- текст оригинальной статьи, если страницу удалось открыть и извлечь читаемый HTML;
+- OpenAI web search, если `OPENAI_WEB_SEARCH_ENABLED=true`;
 - режим запуска: `morning` или `hourly`.
 
-Он просит модель вернуть только текст поста, без markdown и без выдуманных фактов.
+Он просит модель сначала найти и внутренне выделить самые сильные подтверждённые факты, а затем вернуть только текст поста, без markdown и без выдуманных фактов. Если текст статьи недоступен, writer использует title, summary и web search.
 
-Модель выбирается по режиму: hourly использует более экономичный `OPENAI_HOURLY_MODEL`, а morning/analysis используют `OPENAI_STRONG_MODEL`.
+Модель выбирается по режиму: hourly использует `OPENAI_HOURLY_MODEL`, а morning/analysis используют `OPENAI_STRONG_MODEL`.
 
 ### Telegram Approval Flow
 
