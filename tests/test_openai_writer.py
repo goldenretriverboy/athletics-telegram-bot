@@ -4,6 +4,7 @@ from app.writer.openai_writer import (
     build_draft_prompt,
     build_response_params,
     extract_readable_text,
+    sanitize_generated_text,
     select_draft_model,
 )
 
@@ -86,3 +87,17 @@ def test_build_response_params_enables_web_search() -> None:
     assert params["model"] == "gpt-5.6-sol"
     assert params["input"] == "Write post"
     assert params["tools"] == [{"type": "web_search"}]
+
+
+def test_sanitize_generated_text_removes_source_lines_and_raw_urls() -> None:
+    text = sanitize_generated_text(
+        "Runner's World разобрал силовую подготовку для masters-бегунов.\n\n"
+        "В статье есть приседания, выпады и работа на корпус.\n\n"
+        "Источник: https://www.runnersworld.com/training/example\n"
+        "Источник: Runner's World"
+    )
+
+    assert "Runner's World разобрал" in text
+    assert "приседания" in text
+    assert "Источник:" not in text
+    assert "https://" not in text

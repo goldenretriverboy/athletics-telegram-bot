@@ -49,6 +49,7 @@ Rules:
 - For Kazakhstan, Russia/CIS, China, and nearby accessible starts, add local context: distance from Kazakhstan, whether the event is realistic for local runners to visit, which notable athletes are involved, and whether the news changes plans for participants.
 - For cancellations, postponements, and schedule changes, be practical: exact date, city, organizer, reason if confirmed, what happens to registration, refunds, transfers, and replacement dates. Do not guess the reason.
 - For health and physiology posts, publish only if the article has a practical sport connection. Explain the finding carefully: what was measured, who was studied, what changed, and where the authors are cautious.
+- For training and exercise posts, do not stop at saying that a guide exists. If the source lists exercises, name 3-6 useful examples and briefly explain what each one is for. Include sets, reps, frequency, or progression only when the source states them clearly. Do not present it as a personal prescription or a complete medical/training plan.
 - Do not overload posts with every number from a source. Pick the numbers a reader will remember.
 - Longer posts are allowed when the source has enough substance. Prefer a readable mini-article over a thin news flash, but never invent missing facts.
 - Avoid publishing several small posts when one clear morning thematic summary would serve readers better.

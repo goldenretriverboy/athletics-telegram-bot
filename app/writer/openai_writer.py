@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from html.parser import HTMLParser
 from pathlib import Path
 
@@ -11,6 +12,8 @@ from app.models import DraftPost, SourceItem
 
 STRONG_DRAFT_MODES = {"morning", "analysis", "explainer"}
 MAX_ARTICLE_CONTEXT_CHARS = 12000
+SOURCE_LINE_RE = re.compile(r"^\s*(источник|source)\s*:", re.IGNORECASE)
+RAW_URL_RE = re.compile(r"https?://\S+", re.IGNORECASE)
 
 
 class ReadableHTMLParser(HTMLParser):
@@ -115,7 +118,7 @@ Before writing, internally extract the strongest source-backed facts from the ar
 If the article text is not available or does not contain a detail, do not invent it.
 
 Return only the post text. Do not invent facts. Do not include markdown.
-Do not include a source line, raw URL, or "Источник:" in the text.
+Never include a source line, raw URL, "Источник:", or "Source:" in the text.
 The system appends the source link automatically.
 """
 
@@ -130,6 +133,18 @@ def build_response_params(model: str, prompt: str, web_search_enabled: bool) -> 
     return params
 
 
+def sanitize_generated_text(text: str) -> str:
+    cleaned_lines: list[str] = []
+    for line in text.splitlines():
+        if SOURCE_LINE_RE.match(line) or RAW_URL_RE.search(line):
+            continue
+        cleaned_lines.append(line.rstrip())
+    cleaned = "\n".join(cleaned_lines).strip()
+    while "\n\n\n" in cleaned:
+        cleaned = cleaned.replace("\n\n\n", "\n\n")
+    return cleaned
+
+
 async def write_draft(item: SourceItem, digest_mode: str | None = None) -> DraftPost:
     settings = get_settings()
     client = AsyncOpenAI(api_key=settings.openai_api_key)
@@ -140,7 +155,7 @@ async def write_draft(item: SourceItem, digest_mode: str | None = None) -> Draft
     prompt = build_draft_prompt(item, editorial_rules, mode, article_context)
     response_params = build_response_params(model, prompt, settings.openai_web_search_enabled)
     response = await client.responses.create(**response_params)
-    text = response.output_text.strip()
+    text = sanitize_generated_text(response.output_text)
     return DraftPost(
         source_item_id=item.id,
         text=text,
