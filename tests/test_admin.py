@@ -2,7 +2,7 @@ import pytest
 from fastapi import HTTPException
 
 from app.core.config import get_settings
-from app.web.admin import verify_admin_secret
+from app.web.admin import ManualDraftRequest, verify_admin_secret
 
 
 def test_verify_admin_secret_accepts_webhook_secret(monkeypatch):
@@ -30,3 +30,13 @@ def test_verify_admin_secret_rejects_wrong_secret(monkeypatch):
         verify_admin_secret("wrong-secret")
 
     assert exc.value.status_code == 401
+
+
+def test_manual_draft_request_accepts_required_fields() -> None:
+    payload = ManualDraftRequest(
+        text="Текст черновика",
+        source_url="https://example.com/source",
+        source_title="Example",
+    )
+
+    assert payload.disable_web_page_preview is False

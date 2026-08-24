@@ -1,6 +1,7 @@
 from hmac import compare_digest
 
 from fastapi import APIRouter, Header, HTTPException, status
+from pydantic import BaseModel, Field
 
 from app.core.config import get_settings
 from app.db.pool import create_pool
@@ -10,6 +11,13 @@ from app.pipeline import run_monitor
 from app.telegram.client import TelegramClient
 
 router = APIRouter(prefix="/admin", tags=["admin"])
+
+
+class ManualDraftRequest(BaseModel):
+    text: str = Field(..., min_length=1)
+    source_url: str = Field(..., min_length=1)
+    source_title: str = Field(..., min_length=1)
+    disable_web_page_preview: bool = False
 
 
 def verify_admin_secret(secret: str | None) -> None:
@@ -35,6 +43,28 @@ async def create_test_draft(x_admin_secret: str | None = Header(default=None)) -
             source_url="https://worldathletics.org/",
             source_title="World Athletics",
             disable_web_page_preview=True,
+        )
+        draft = await insert_draft(pool, draft)
+        message_id = await TelegramClient().send_draft(draft)
+        await mark_draft_message(pool, draft.id, message_id)
+    finally:
+        await pool.close()
+    return {"ok": True, "draft_id": draft.id, "message_id": message_id}
+
+
+@router.post("/manual-draft")
+async def create_manual_draft(
+    payload: ManualDraftRequest,
+    x_admin_secret: str | None = Header(default=None),
+) -> dict:
+    verify_admin_secret(x_admin_secret)
+    pool = await create_pool()
+    try:
+        draft = DraftPost(
+            text=payload.text,
+            source_url=payload.source_url,
+            source_title=payload.source_title,
+            disable_web_page_preview=payload.disable_web_page_preview,
         )
         draft = await insert_draft(pool, draft)
         message_id = await TelegramClient().send_draft(draft)
