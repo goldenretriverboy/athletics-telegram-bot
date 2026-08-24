@@ -5,7 +5,7 @@ from collections.abc import Sequence
 import asyncpg
 
 from app.core.hashing import stable_hash
-from app.models import DraftPost, SourceItem
+from app.models import DraftPost, SourceItem, StoryCandidate
 
 
 async def insert_source_items(pool: asyncpg.Pool, items: Sequence[SourceItem]) -> list[SourceItem]:
@@ -44,6 +44,42 @@ async def draft_exists_for_source(pool: asyncpg.Pool, source_url: str) -> bool:
     async with pool.acquire() as conn:
         row = await conn.fetchrow("SELECT 1 FROM drafts WHERE source_url = $1 LIMIT 1", source_url)
     return row is not None
+
+
+async def get_recent_story_candidates(
+    pool: asyncpg.Pool,
+    lookback_days: int,
+    limit: int = 100,
+) -> list[StoryCandidate]:
+    async with pool.acquire() as conn:
+        rows = await conn.fetch(
+            """
+            SELECT
+                COALESCE(si.title, d.source_title) AS title,
+                d.text,
+                d.source_url,
+                d.status,
+                pp.telegram_message_id AS published_message_id
+            FROM drafts d
+            LEFT JOIN source_items si ON si.id = d.source_item_id
+            LEFT JOIN published_posts pp ON pp.draft_id = d.id
+            WHERE d.created_at >= NOW() - ($1::int * INTERVAL '1 day')
+            ORDER BY d.created_at DESC
+            LIMIT $2
+            """,
+            lookback_days,
+            limit,
+        )
+    return [
+        StoryCandidate(
+            title=row["title"],
+            text=row["text"],
+            source_url=row["source_url"],
+            status=row["status"],
+            published_message_id=row["published_message_id"],
+        )
+        for row in rows
+    ]
 
 
 async def insert_draft(pool: asyncpg.Pool, draft: DraftPost) -> DraftPost:

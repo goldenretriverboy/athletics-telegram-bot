@@ -8,7 +8,7 @@ import httpx
 from openai import AsyncOpenAI
 
 from app.core.config import Settings, get_settings
-from app.models import DraftPost, SourceItem
+from app.models import DraftPost, SourceItem, StoryCandidate
 
 STRONG_DRAFT_MODES = {"morning", "analysis", "explainer"}
 MAX_ARTICLE_CONTEXT_CHARS = 12000
@@ -88,10 +88,22 @@ def build_draft_prompt(
     editorial_rules: str,
     mode: str,
     article_context: str = "",
+    related_story: StoryCandidate | None = None,
 ) -> str:
     article_section = (
         article_context or "Article text was not available. Use the title and summary only."
     )
+    related_section = ""
+    if related_story is not None:
+        related_section = f"""
+This appears to be an update to a story already covered by the channel.
+Previous story title: {related_story.title}
+Previous post text:
+{related_story.text}
+
+Write the new post as an update: make clear what changed now, avoid repeating the old
+post, and keep only the old context that helps readers understand the update.
+"""
     return f"""
 Write one Russian Telegram post for an athletics channel.
 
@@ -107,6 +119,7 @@ Summary: {item.summary}
 Article text excerpt:
 {article_section}
 URL: {item.url}
+{related_section}
 
 Use the article text excerpt for results, research details, dates, comparisons,
 and limitations when it is available.
@@ -145,14 +158,18 @@ def sanitize_generated_text(text: str) -> str:
     return cleaned
 
 
-async def write_draft(item: SourceItem, digest_mode: str | None = None) -> DraftPost:
+async def write_draft(
+    item: SourceItem,
+    digest_mode: str | None = None,
+    related_story: StoryCandidate | None = None,
+) -> DraftPost:
     settings = get_settings()
     client = AsyncOpenAI(api_key=settings.openai_api_key)
     editorial_rules = load_editorial_rules()
     mode = digest_mode or "hourly update"
     model = select_draft_model(settings, digest_mode)
     article_context = await fetch_article_context(item.url)
-    prompt = build_draft_prompt(item, editorial_rules, mode, article_context)
+    prompt = build_draft_prompt(item, editorial_rules, mode, article_context, related_story)
     response_params = build_response_params(model, prompt, settings.openai_web_search_enabled)
     response = await client.responses.create(**response_params)
     text = sanitize_generated_text(response.output_text)

@@ -29,6 +29,8 @@ class Settings(BaseSettings):
     max_drafts_per_run: int = 3
     hourly_no_news_status_enabled: bool = True
     hourly_no_news_notify_after_runs: int = 4
+    duplicate_story_lookback_days: int = 14
+    duplicate_story_similarity_threshold: float = 0.42
 
 
 @lru_cache

@@ -1,13 +1,17 @@
+import html
+
 from app.collectors.rss import collect_sources
 from app.collectors.sources import load_sources
 from app.core.config import get_settings
 from app.db.repository import (
     count_consecutive_empty_runs,
     draft_exists_for_source,
+    get_recent_story_candidates,
     insert_draft,
     insert_run_log,
     insert_source_items,
 )
+from app.dedup import find_related_story, is_meaningful_update, telegram_post_url
 from app.ranking.scorer import rank_items
 from app.telegram.client import TelegramClient
 from app.writer.openai_writer import write_draft
@@ -36,7 +40,26 @@ async def run_monitor(pool, mode: str = "hourly") -> int:
             break
         if await draft_exists_for_source(pool, item.url):
             continue
-        draft = await write_draft(item, digest_mode=mode)
+        candidates = await get_recent_story_candidates(
+            pool,
+            settings.duplicate_story_lookback_days,
+        )
+        related_story = find_related_story(
+            item,
+            candidates,
+            settings.duplicate_story_similarity_threshold,
+        )
+        if related_story is not None and not is_meaningful_update(item):
+            continue
+        draft = await write_draft(item, digest_mode=mode, related_story=related_story)
+        previous_post_url = (
+            telegram_post_url(settings.telegram_channel_id, related_story.published_message_id)
+            if related_story is not None
+            else None
+        )
+        if previous_post_url:
+            escaped_url = html.escape(previous_post_url, quote=True)
+            draft.text = f'{draft.text}\n\n<a href="{escaped_url}">Предыдущий пост по теме</a>'
         draft = await insert_draft(pool, draft)
         if settings.auto_publish:
             message_id = await telegram.publish(draft)
