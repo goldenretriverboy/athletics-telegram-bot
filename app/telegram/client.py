@@ -48,6 +48,17 @@ class TelegramClient:
         )
         return int(data["result"]["message_id"])
 
+    async def send_draft_status(self, text: str) -> int:
+        data = await self._post(
+            "sendMessage",
+            {
+                "chat_id": self.settings.telegram_draft_chat_id,
+                "text": text,
+                "disable_web_page_preview": True,
+            },
+        )
+        return int(data["result"]["message_id"])
+
     async def answer_callback(self, callback_query_id: str, text: str) -> None:
         await self._post(
             "answerCallbackQuery",

@@ -4,6 +4,7 @@ import pytest
 
 from app.core.config import get_settings
 from app.models import DraftPost, SourceItem
+from app.pipeline import should_send_no_news_status
 
 
 def make_item(index: int) -> SourceItem:
@@ -66,6 +67,9 @@ async def test_run_monitor_skips_existing_drafts_before_applying_limit(monkeypat
     async def fake_mark_draft_message(_pool, _draft_id, _message_id):
         return None
 
+    async def fake_insert_run_log(_pool, _mode, _status, _message):
+        return None
+
     import app.db.repository as repository
 
     monkeypatch.setattr(pipeline, "collect_sources", fake_collect_sources)
@@ -73,6 +77,7 @@ async def test_run_monitor_skips_existing_drafts_before_applying_limit(monkeypat
     monkeypatch.setattr(pipeline, "draft_exists_for_source", fake_draft_exists_for_source)
     monkeypatch.setattr(pipeline, "write_draft", fake_write_draft)
     monkeypatch.setattr(pipeline, "insert_draft", fake_insert_draft)
+    monkeypatch.setattr(pipeline, "insert_run_log", fake_insert_run_log)
     monkeypatch.setattr(repository, "mark_draft_message", fake_mark_draft_message)
     monkeypatch.setattr(pipeline, "TelegramClient", FakeTelegramClient)
 
@@ -80,3 +85,11 @@ async def test_run_monitor_skips_existing_drafts_before_applying_limit(monkeypat
 
     assert created == 2
     assert drafted_urls == [items[2].url, items[3].url]
+
+
+def test_should_send_no_news_status_every_threshold_runs() -> None:
+    assert should_send_no_news_status(0, 4) is False
+    assert should_send_no_news_status(3, 4) is False
+    assert should_send_no_news_status(4, 4) is True
+    assert should_send_no_news_status(5, 4) is False
+    assert should_send_no_news_status(8, 4) is True

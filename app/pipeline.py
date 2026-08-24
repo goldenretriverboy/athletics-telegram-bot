@@ -1,10 +1,20 @@
 from app.collectors.rss import collect_sources
 from app.collectors.sources import load_sources
 from app.core.config import get_settings
-from app.db.repository import draft_exists_for_source, insert_draft, insert_source_items
+from app.db.repository import (
+    count_consecutive_empty_runs,
+    draft_exists_for_source,
+    insert_draft,
+    insert_run_log,
+    insert_source_items,
+)
 from app.ranking.scorer import rank_items
 from app.telegram.client import TelegramClient
 from app.writer.openai_writer import write_draft
+
+
+def should_send_no_news_status(consecutive_empty_runs: int, threshold: int) -> bool:
+    return threshold > 0 and consecutive_empty_runs > 0 and consecutive_empty_runs % threshold == 0
 
 
 async def run_monitor(pool, mode: str = "hourly") -> int:
@@ -40,4 +50,13 @@ async def run_monitor(pool, mode: str = "hourly") -> int:
 
             await mark_draft_message(pool, draft.id, message_id)
         created += 1
+    await insert_run_log(pool, mode, "success", f"created={created}")
+    if mode == "hourly" and created == 0 and settings.hourly_no_news_status_enabled:
+        empty_runs = await count_consecutive_empty_runs(pool, mode)
+        if should_send_no_news_status(empty_runs, settings.hourly_no_news_notify_after_runs):
+            await telegram.send_draft_status(
+                "Служебный статус: hourly-мониторинг работает. "
+                f"Последние {empty_runs} проверки не дали новых сильных тем для draft. "
+                "Слабые, повторные или уже обработанные новости пропущены."
+            )
     return created

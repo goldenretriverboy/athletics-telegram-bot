@@ -27,6 +27,8 @@ class Settings(BaseSettings):
 
     timezone: str = "Asia/Almaty"
     max_drafts_per_run: int = 3
+    hourly_no_news_status_enabled: bool = True
+    hourly_no_news_notify_after_runs: int = 4
 
 
 @lru_cache

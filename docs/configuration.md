@@ -30,6 +30,8 @@
 | `OPENAI_WEB_SEARCH_ENABLED` | Нет | Если `true`, модель может использовать web search перед написанием поста. Сейчас `true`. |
 | `TIMEZONE` | Нет | Часовой пояс проекта. Сейчас `Asia/Almaty`. |
 | `MAX_DRAFTS_PER_RUN` | Нет | Максимум новых черновиков за один запуск. |
+| `HOURLY_NO_NEWS_STATUS_ENABLED` | Нет | Если `true`, draft-чат получает редкий служебный статус, когда hourly несколько раз подряд не создал черновики. |
+| `HOURLY_NO_NEWS_NOTIFY_AFTER_RUNS` | Нет | Через сколько пустых hourly-проверок отправлять статус. Сейчас `4`. |
 
 ## Важные Безопасные Значения
 
@@ -37,6 +39,8 @@
 AUTO_PUBLISH=false
 TIMEZONE=Asia/Almaty
 MAX_DRAFTS_PER_RUN=3
+HOURLY_NO_NEWS_STATUS_ENABLED=true
+HOURLY_NO_NEWS_NOTIFY_AFTER_RUNS=4
 ```
 
 `AUTO_PUBLISH=false` означает, что бот отправляет черновики в draft-канал и ждёт ручного подтверждения.
@@ -53,6 +57,12 @@ MAX_DRAFTS_PER_RUN=3
 Так все режимы генерации используют одну сильную модель. Это дороже, но полезно, если hourly posts тоже должны выходить как полноценные русскоязычные мини-статьи.
 
 Если `OPENAI_WEB_SEARCH_ENABLED=true`, writer разрешает OpenAI web search. Модель может искать недостающие результаты, даты, исследования и официальный контекст перед написанием поста.
+
+## No-News Status
+
+Hourly monitoring часто должен возвращать `created=0`: это значит, что слабые, повторные или уже обработанные новости были пропущены.
+
+Чтобы было видно, что cron живой, `HOURLY_NO_NEWS_STATUS_ENABLED=true` включает служебное сообщение в draft-чат после нескольких пустых проверок подряд. По умолчанию статус отправляется после 4 пустых hourly runs, затем после 8, 12 и так далее.
 
 ## `config/sources.yaml`
 

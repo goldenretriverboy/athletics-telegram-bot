@@ -106,6 +106,39 @@ async def mark_draft_message(pool: asyncpg.Pool, draft_id: int, message_id: int)
         )
 
 
+async def insert_run_log(pool: asyncpg.Pool, job_name: str, status: str, message: str) -> None:
+    async with pool.acquire() as conn:
+        await conn.execute(
+            """
+            INSERT INTO run_logs (job_name, status, message, finished_at)
+            VALUES ($1, $2, $3, NOW())
+            """,
+            job_name,
+            status,
+            message,
+        )
+
+
+async def count_consecutive_empty_runs(pool: asyncpg.Pool, job_name: str) -> int:
+    async with pool.acquire() as conn:
+        rows = await conn.fetch(
+            """
+            SELECT message
+            FROM run_logs
+            WHERE job_name = $1 AND status = 'success'
+            ORDER BY finished_at DESC, id DESC
+            LIMIT 24
+            """,
+            job_name,
+        )
+    count = 0
+    for row in rows:
+        if row["message"] != "created=0":
+            break
+        count += 1
+    return count
+
+
 async def insert_published_post(
     pool: asyncpg.Pool,
     draft: DraftPost,
